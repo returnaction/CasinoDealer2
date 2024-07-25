@@ -7,32 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 namespace CasinoDealer2.Controllers
 {
     [Authorize]
-    public class RouletteController : Controller
+    public class BlackJackController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly Random _random = new Random();
 
-        public RouletteController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public BlackJackController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public IActionResult Index(Question? oldRrequest)
+        public IActionResult BlackJackQuestion()
         {
-            // if the old request is null it means previous question was answered properly
-            if (oldRrequest is null)
-            {
-                var question = GenerateQuestion();
-                return View(question);
-            }
-
-            return View(oldRrequest);
+            var question = GenerateQuestion();
+            return View(question);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitAnswer(Question request)
+        public async Task<IActionResult> BlackJackQuestion(Question request)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user is null)
@@ -40,9 +34,19 @@ namespace CasinoDealer2.Controllers
 
             var userId = user.Id;
 
-            bool isCorrect = request.CorrectAnswer.Equals(request.Answer, StringComparison.OrdinalIgnoreCase);
+            bool isCorrect;
+            if (double.TryParse(request.Answer.ToString(), out double userAnswer))
+            {
+                isCorrect = Math.Abs(userAnswer - request.CorrectAnswer) < 0.01;
+            }
+            else
+            {
+                isCorrect = false;
+            }
 
+            request.Id = Guid.NewGuid();
             request.IsCorrect = isCorrect;
+            request.UserId = userId;
 
             _context.Questions.Add(request);
             await _context.SaveChangesAsync();
@@ -50,15 +54,14 @@ namespace CasinoDealer2.Controllers
             // if the answer is correct
             if (isCorrect)
             {
-                return RedirectToAction("Index", "Roulette");
+                return RedirectToAction("BlackJackQuestion", "BlackJack");
             }
             else
             {
                 // if the answer is wrong
                 request.IncorrectStreak++;
-                return RedirectToAction(nameof(Index), new { oldRequest = request });
+                return View(request);
             }
-
 
         }
 
@@ -67,13 +70,12 @@ namespace CasinoDealer2.Controllers
         {
             int number = _random.Next(1, 21) * 5;
             string questionText = $"What is the blackjack payout of {number}";
-            string correctAnswer = (number * 1.5).ToString();
+            double correctAnswer = (number * 1.5);
 
             var question = new Question
             {
                 QuestionText = questionText,
                 CorrectAnswer = correctAnswer,
-                Answer = string.Empty,
                 IsCorrect = false
             };
 

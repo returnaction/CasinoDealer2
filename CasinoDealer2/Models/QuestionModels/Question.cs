@@ -13,10 +13,9 @@ namespace CasinoDealer2.Models.QuestionModels
         public string QuestionText { get; set; } = null!;
 
         [Required]
-        public string Answer { get; set; } = null!;
+        public double Answer { get; set; }
 
-
-        public string CorrectAnswer { get; set; } = null!;
+        public double CorrectAnswer { get; set; } 
 
 
         public bool IsCorrect { get; set; }
