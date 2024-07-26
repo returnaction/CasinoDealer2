@@ -29,27 +29,17 @@ namespace CasinoDealer2.Controllers
         [HttpPost]
         public async Task<IActionResult> BlackJackQuestion(Question request)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user is null)
-                return Unauthorized();
+            var userId = _userManager.GetUserId(User);
 
-            var userId = user.Id;
+            bool isCorrect = false;
 
-            bool isCorrect;
-            if (double.TryParse(request.Answer.ToString(), out double userAnswer))
-            {
-                isCorrect = Math.Abs(userAnswer - request.CorrectAnswer) < 0.01;
-            }
-            else
-            {
-                isCorrect = false;
-            }
+            if (request.Answer == request.CorrectAnswer)
+                isCorrect = true;
 
-            // create a new Id. The second time if my answer is wrong it will not going to save with the same id into db;
-            // TODO: maybe I should delete in model Guid.NewGuid(); there is no point of that.
+
             request.Id = Guid.NewGuid();
             request.IsCorrect = isCorrect;
-            request.UserId = userId;
+            request.UserId = userId!;
 
             _context.Questions.Add(request);
             await _context.SaveChangesAsync();

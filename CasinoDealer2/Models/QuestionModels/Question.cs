@@ -8,7 +8,7 @@ namespace CasinoDealer2.Models.QuestionModels
     public class Question
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } 
 
         [Required]
         public string QuestionText { get; set; } = null!;
@@ -19,6 +19,10 @@ namespace CasinoDealer2.Models.QuestionModels
         public double CorrectAnswer { get; set; }
 
         public GameType GameType { get; set; }
+
+        //For Dice
+        public int? DiceRolled { get; set; }
+        // End Dice
 
 
         public bool IsCorrect { get; set; }

@@ -1,21 +1,21 @@
-﻿
-@model Question
-
+﻿@model Question
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "CrapsQuestion";
 }
+
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card w-50">
         <div class="card-body">
-            <h1 class="card-title text-center">BlackJack</h1>
-            <form asp-action="BlackJackQuestion" method="post">
+            <h1 class="card-title text-center">Craps</h1>
+            <form asp-action="CrapsQuestion" method="post">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="CorrectAnswer" />
                 <input type="hidden" asp-for="IsCorrect" />
                 <input type="hidden" asp-for="IncorrectStreak" />
                 <input type="hidden" asp-for="QuestionText" />
                 <input type="hidden" asp-for="GameType" />
+                <input type="hidden" asp-for="DiceRolled" />
 
                 <div class="form-group">
                     <p>@Model.QuestionText</p>
@@ -33,3 +33,6 @@
         </div>
     </div>
 </div>
+
+
+
