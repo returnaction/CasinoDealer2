@@ -44,6 +44,8 @@ namespace CasinoDealer2.Controllers
                 isCorrect = false;
             }
 
+            // create a new Id. The second time if my answer is wrong it will not going to save with the same id into db;
+            // TODO: maybe I should delete in model Guid.NewGuid(); there is no point of that.
             request.Id = Guid.NewGuid();
             request.IsCorrect = isCorrect;
             request.UserId = userId;

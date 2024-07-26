@@ -5,24 +5,30 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>BlackJack</h1>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card w-50">
+        <div class="card-body">
+            <h1 class="card-title text-center">BlackJack</h1>
+            <form asp-action="BlackJackQuestion" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CorrectAnswer" />
+                <input type="hidden" asp-for="IsCorrect" />
+                <input type="hidden" asp-for="IncorrectStreak" />
+                <input type="hidden" asp-for="QuestionText" />
 
-<form asp-action="BlackJackQuestion" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="CorrectAnswer" />
-    <input type="hidden" asp-for="IsCorrect" />
-    <input type="hidden" asp-for="IncorrectStreak" />
-    <input type="hidden" asp-for="QuestionText" />
+                <div class="form-group">
+                    <p>@Model.QuestionText</p>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Answer">Your Answer:</label>
+                    <input asp-for="Answer" type="number" step="any" class="form-control" />
+                    <span asp-validation-for="Answer" class="text-danger"></span>
+                </div>
 
-    <div class="form-group">
-        <label asp-for="QuestionText"></label>
-        <p>@Model.QuestionText</p>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Answer">Your Answer:</label>
-        <input asp-for="Answer" type="number" step="any" class="form-control" />
-        <span asp-validation-for="Answer" class="text-danger"></span>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>
