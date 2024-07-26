@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using CasinoDealer2.Models.Enums;
 
 namespace CasinoDealer2.Models.QuestionModels
 {
@@ -15,7 +16,9 @@ namespace CasinoDealer2.Models.QuestionModels
         [Required]
         public double Answer { get; set; }
 
-        public double CorrectAnswer { get; set; } 
+        public double CorrectAnswer { get; set; }
+
+        public GameType GameType { get; set; }
 
 
         public bool IsCorrect { get; set; }

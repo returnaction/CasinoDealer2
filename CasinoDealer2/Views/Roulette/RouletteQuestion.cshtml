@@ -1,15 +1,13 @@
-﻿
-@model Question
-
+﻿@model Question
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "RouletteQuestion";
 }
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card w-50">
         <div class="card-body">
-            <h1 class="card-title text-center">BlackJack</h1>
-            <form asp-action="BlackJackQuestion" method="post">
+            <h1 class="card-title text-center">Roulette</h1>
+            <form asp-action="RouletteQuestion" method="post">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="CorrectAnswer" />
                 <input type="hidden" asp-for="IsCorrect" />
@@ -32,3 +30,4 @@
         </div>
     </div>
 </div>
+

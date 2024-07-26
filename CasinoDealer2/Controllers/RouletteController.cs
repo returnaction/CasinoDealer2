@@ -8,26 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 namespace CasinoDealer2.Controllers
 {
     [Authorize]
-    public class BlackJackController : Controller
+    public class RouletteController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly Random _random = new Random();
 
-        public BlackJackController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public RouletteController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public IActionResult BlackJackQuestion()
+        public IActionResult RouletteQuestion()
         {
-            var question = GenerateBJQuestion();
+            var question = GenerateRQuestion();
             return View(question);
         }
 
         [HttpPost]
-        public async Task<IActionResult> BlackJackQuestion(Question request)
+        public async Task<IActionResult> RouletteQuestion(Question request)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user is null)
@@ -57,7 +57,7 @@ namespace CasinoDealer2.Controllers
             // if the answer is correct
             if (isCorrect)
             {
-                return RedirectToAction("BlackJackQuestion", "BlackJack");
+                return RedirectToAction("RouletteQuestion", "Roulette");
             }
             else
             {
@@ -68,22 +68,26 @@ namespace CasinoDealer2.Controllers
 
         }
 
-        // Generation question
-        private Question GenerateBJQuestion()
+
+        private Question GenerateRQuestion()
         {
-            int number = _random.Next(1, 21) * 5;
-            string questionText = $"What is the blackjack payout of {number}";
-            double correctAnswer = (number * 1.5);
+            int multiplier = _random.Next(0, 2) == 0 ? 17 : 35;
+            int number = _random.Next(1, 21);
+
+            double correctAnswer = multiplier * number;
+
+            string questionText = $"What is the result of {multiplier} x {number}";
 
             var question = new Question
             {
                 QuestionText = questionText,
                 CorrectAnswer = correctAnswer,
                 IsCorrect = false,
-                GameType = GameType.BalckJack
+                GameType = GameType.Roulette
             };
 
             return question;
         }
+
     }
 }
