@@ -1,4 +1,5 @@
 using CasinoDealer2.Data;
+using CasinoDealer2.Extenstions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,10 @@ namespace CasinoDealer2
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddCustomServices(builder.Configuration);
+
+
 
             var app = builder.Build();
 

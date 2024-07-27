@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CasinoDealer2.RepositoryFolder.QuestionRepository
 {
-    public class QuestionRepsitory : Repository<Question>, IQuestionRepsitory
+    public class QuestionService : Repository<Question>, IQuestionService
     {
-        public QuestionRepsitory(ApplicationDbContext context) : base(context)
+        public QuestionService(ApplicationDbContext context) : base(context)
         {
         }
 
