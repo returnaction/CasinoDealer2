@@ -1,4 +1,5 @@
 ﻿using CasinoDealer2.Models.BlackJackSettings;
+using CasinoDealer2.Models.Enums;
 using CasinoDealer2.RepositoryFolder.BalckJackRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,12 @@ public class BlackJackController : Controller
     {
         _userManager = userManager;
         _blackJackService = blackJackService;
+    }
+
+    // Inital Page
+    public IActionResult BlackJackIndex()
+    {
+        return View();
     }
 
     public IActionResult BlackJackQuestion()
@@ -41,7 +48,7 @@ public class BlackJackController : Controller
     public async Task<IActionResult> BlackJackQuestion(BlackJackVM model)
     {
         var userId = _userManager.GetUserId(User);
-        bool isCorrect = await _blackJackService.SaveBlackJackQuestionAsync(model.Question, userId);
+        bool isCorrect = await _blackJackService.SaveBlackJackQuestionAsync(model.Question, userId!);
 
         // Keep settings consistent between questions
         BlackJackSettings settings = GetSettingsFromTempData();
@@ -54,7 +61,7 @@ public class BlackJackController : Controller
             return View(model);
         }
 
-        SaveSettingsToTempData(settings);
+        SaveSettingsToTempData(settings);                                                                                                                                       
         return RedirectToAction("BlackJackQuestion");
     }
 
@@ -63,18 +70,21 @@ public class BlackJackController : Controller
         TempData["MinBet"] = settings.MinBet;
         TempData["MaxBet"] = settings.MaxBet;
         TempData["Increment"] = settings.Increment;
+        TempData["PayoutType"] = settings.PayoutType;
         TempData.Keep("MinBet");
         TempData.Keep("MaxBet");
         TempData.Keep("Increment");
+        TempData.Keep("PayoutType");
     }
 
     private BlackJackSettings GetSettingsFromTempData()
     {
         return new BlackJackSettings
         {
-            MinBet = TempData.ContainsKey("MinBet") ? (int)TempData["MinBet"] : 5,
-            MaxBet = TempData.ContainsKey("MaxBet") ? (int)TempData["MaxBet"] : 100,
-            Increment = TempData.ContainsKey("Increment") ? (int)TempData["Increment"] : 5
+            MinBet = TempData.ContainsKey("MinBet") ? (int)TempData["MinBet"]! : 5,
+            MaxBet = TempData.ContainsKey("MaxBet") ? (int)TempData["MaxBet"]! : 100,
+            Increment = TempData.ContainsKey("Increment") ? (int)TempData["Increment"]! : 5,
+            PayoutType = TempData.ContainsKey("PayoutType") ? (BlackJackPayOutType)TempData["PayoutType"]! : BlackJackPayOutType.ThreeToTwo
         };
     }
 }

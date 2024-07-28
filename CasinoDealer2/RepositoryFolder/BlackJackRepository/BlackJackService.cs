@@ -1,10 +1,7 @@
-﻿using Azure.Core;
-using CasinoDealer2.Models.BlackJackSettings;
+﻿using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.UnitOfWork;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 {
@@ -34,7 +31,14 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
             }
 
             string questionText = $"BlackJack of {number}";
-            double correctAnswer = number * 1.5;
+            double correctAnswer;
+
+            if (settings.PayoutType == BlackJackPayOutType.ThreeToTwo)
+                correctAnswer = number * 1.5;
+            else
+            {
+                correctAnswer = number * 1.2;
+            }
 
             var question = new Question
             {
