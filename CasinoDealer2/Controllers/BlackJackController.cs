@@ -1,4 +1,5 @@
-﻿using CasinoDealer2.Models.QuestionModels;
+﻿using CasinoDealer2.Models.BlackJackSettings;
+using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.RepositoryFolder.BalckJackRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ namespace CasinoDealer2.Controllers
     {
         private readonly IBlackJackService _blackJackService;
         private readonly UserManager<IdentityUser> _userManager;
+        private static BlackJackSettings _settings = new BlackJackSettings { MinBet = 5, MaxBet = 100, Increment = 5 };
 
         public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService)
         {
@@ -20,16 +22,28 @@ namespace CasinoDealer2.Controllers
 
         public IActionResult BlackJackQuestion()
         {
-            var question = _blackJackService.GenerateBlackJackQuestion();
-            return View(question);
+            var question = _blackJackService.GenerateBlackJackQuestion(_settings);
+            var model = new BlackJackVM
+            {
+                Question = question,
+                Settings = _settings
+            };
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> BlackJackQuestion(Question request)
+        public IActionResult UpdateSettings(BlackJackVM model)
+        {
+            _settings = model.Settings;
+            return RedirectToAction("BlackJackQuestion");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BlackJackQuestion(BlackJackVM model)
         {
             var userId = _userManager.GetUserId(User)!;
 
-            bool isCorrect =  await _blackJackService.SaveBlackJackQuestionAsync(request, userId);
+            bool isCorrect =  await _blackJackService.SaveBlackJackQuestionAsync(model.Question, userId);
 
             // if the answer is correct
             if (isCorrect)
@@ -39,8 +53,8 @@ namespace CasinoDealer2.Controllers
             else
             {
                 // if the answer is wrong
-                request.IncorrectStreak++;
-                return View(request);
+                model.Question.IncorrectStreak++;
+                return View(model);
             }
 
         }

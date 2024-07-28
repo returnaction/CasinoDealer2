@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.UnitOfWork;
@@ -16,9 +17,22 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
             _unitOfWork = unitOfWork;
         }
 
-        public Question GenerateBlackJackQuestion()
+        public Question GenerateBlackJackQuestion(BlackJackSettings settings)
         {
-            int number = _random.Next(1, 21) * 5;
+            int minBet = settings.MinBet;
+            int maxBet = settings.MaxBet;
+            int increment = settings.Increment;
+
+            int number;
+            if (minBet == 0 || maxBet == 0 || increment == 0)
+            {
+                number = _random.Next(1, 21) * 5;
+            }
+            else
+            {
+                number = _random.Next(minBet / increment, maxBet / increment + 1) * increment;
+            }
+
             string questionText = $"What is the blackjack payout of {number}";
             double correctAnswer = number * 1.5;
 

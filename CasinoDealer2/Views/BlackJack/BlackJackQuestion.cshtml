@@ -1,5 +1,5 @@
-﻿
-@model Question
+﻿@using CasinoDealer2.Models.BlackJackSettings
+@model BlackJackVM
 
 @{
     ViewData["Title"] = "Index";
@@ -10,24 +10,49 @@
         <div class="card-body">
             <h1 class="card-title text-center">BlackJack</h1>
             <form asp-action="BlackJackQuestion" method="post">
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="CorrectAnswer" />
-                <input type="hidden" asp-for="IsCorrect" />
-                <input type="hidden" asp-for="IncorrectStreak" />
-                <input type="hidden" asp-for="QuestionText" />
-                <input type="hidden" asp-for="GameType" />
+                <input type="hidden" asp-for="Question.Id" />
+                <input type="hidden" asp-for="Question.CorrectAnswer" />
+                <input type="hidden" asp-for="Question.IsCorrect" />
+                <input type="hidden" asp-for="Question.IncorrectStreak" />
+                <input type="hidden" asp-for="Question.QuestionText" />
+                <input type="hidden" asp-for="Question.GameType" />
 
                 <div class="form-group">
-                    <p>@Model.QuestionText</p>
+                    <p>@Model.Question.QuestionText</p>
+                    @if(Model.Question.IncorrectStreak > 0)
+                    {
+                        <p class="text-danger">Wrong!</p>
+                    }
                 </div>
                 <div class="form-group">
-                    <label asp-for="Answer">Your Answer:</label>
-                    <input asp-for="Answer" type="number" step="any" class="form-control" />
-                    <span asp-validation-for="Answer" class="text-danger"></span>
+                    <label asp-for="Question.Answer">Your Answer:</label>
+                    <input asp-for="Question.Answer" type="number" step="any" class="form-control" />
+                    <span asp-validation-for="Question.Answer" class="text-danger"></span>
                 </div>
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+
+            <hr />
+
+            <h2>Settings</h2>
+            <form asp-action="UpdateSettings" method="post">
+                <div class="form-group">
+                    <label asp-for="Settings.MinBet">Min bet:</label>
+                    <input asp-for="Settings.MinBet" type="number" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Settings.MaxBet">Max bet:</label>
+                    <input asp-for="Settings.MaxBet" type="number" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Settings.Increment">Increment:</label>
+                    <input asp-for="Settings.Increment" type="number" class="form-control" />
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Update Settings</button>
                 </div>
             </form>
         </div>

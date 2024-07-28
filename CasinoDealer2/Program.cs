@@ -1,5 +1,6 @@
 using CasinoDealer2.Data;
 using CasinoDealer2.Extenstions;
+using CasinoDealer2.Models.BlackJackSettings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace CasinoDealer2
 
             builder.Services.AddCustomServices(builder.Configuration);
 
-
+        
 
             var app = builder.Build();
 
