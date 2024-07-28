@@ -31,6 +31,7 @@
                         <option value="400">400</option>
                         <option value="500">500</option>
                         <option value="1000">1.000</option>
+                        <option value="2000">2.000</option>
                         <option value="5000">5.000</option>
                         <option value="10000">10.000</option>
                     </select>
@@ -87,10 +88,32 @@
         var minBet = parseInt(this.value);
         var maxBetSelect = document.getElementById('maxBet');
 
-        if (minBet === 100 || minBet === 500) {
+        // Define possible maxBet options
+        var maxBetOptions = [100, 200, 300, 400, 500, 1000, 2000, 5000, 10000];
+
+        // Clear existing options
+        maxBetSelect.innerHTML = '';
+
+        // Add new options based on minBet
+        maxBetOptions.forEach(function (value) {
+            if (value >= minBet) {
+                var option = document.createElement('option');
+                option.value = value;
+                option.text = value;
+                maxBetSelect.appendChild(option);
+            }
+        });
+
+        // Set specific maxBet value based on minBet
+        if (minBet === 100) {
+            maxBetSelect.value = 2000;
+        } else if (minBet === 200) {
+            maxBetSelect.value = 2000;
+        } else if (minBet === 500) {
             maxBetSelect.value = 5000;
         } else {
-            maxBetSelect.value = '';
+            // Set maxBet value to the first valid option if no specific match
+            maxBetSelect.value = maxBetOptions.find(value => value >= minBet);
         }
     });
 </script>
@@ -107,4 +130,21 @@
         -moz-appearance: textfield; /* Firefox */
     }
 </style>
+
+@* <script>
+    document.getElementById('minBet').addEventListener('change', function () {
+        var minBet = parseInt(this.value);
+        var maxBetSelect = document.getElementById('maxBet');
+
+        if (minBet === 100) {
+            maxBetSelect.value = 2000;
+        } else if (minBet === 200) {
+            maxBetSelect.value = 2000;
+        } else if (minBet === 500) {
+            maxBetSelect.value = 5000;
+        }
+    });
+</script> *@
+
+
 

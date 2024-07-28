@@ -1,63 +1,80 @@
 ﻿using CasinoDealer2.Models.BlackJackSettings;
-using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.RepositoryFolder.BalckJackRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CasinoDealer2.Controllers
+[Authorize]
+public class BlackJackController : Controller
 {
-    [Authorize]
-    public class BlackJackController : Controller
+    private readonly IBlackJackService _blackJackService;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService)
     {
-        private readonly IBlackJackService _blackJackService;
-        private readonly UserManager<IdentityUser> _userManager;
-        private static BlackJackSettings _settings = new BlackJackSettings { MinBet = 5, MaxBet = 100, Increment = 5 };
+        _userManager = userManager;
+        _blackJackService = blackJackService;
+    }
 
-        public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService)
+    public IActionResult BlackJackQuestion()
+    {
+        BlackJackSettings settings = GetSettingsFromTempData();
+        var question = _blackJackService.GenerateBlackJackQuestion(settings);
+        var model = new BlackJackVM
         {
-            _userManager = userManager;
-            _blackJackService = blackJackService;
-        }
+            Question = question,
+            Settings = settings
+        };
 
-        public IActionResult BlackJackQuestion()
+        SaveSettingsToTempData(settings);
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult UpdateSettings(BlackJackVM model)
+    {
+        SaveSettingsToTempData(model.Settings);
+        return RedirectToAction("BlackJackQuestion");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BlackJackQuestion(BlackJackVM model)
+    {
+        var userId = _userManager.GetUserId(User);
+        bool isCorrect = await _blackJackService.SaveBlackJackQuestionAsync(model.Question, userId);
+
+        // Keep settings consistent between questions
+        BlackJackSettings settings = GetSettingsFromTempData();
+        if (!isCorrect)
         {
-            var question = _blackJackService.GenerateBlackJackQuestion(_settings);
-            var model = new BlackJackVM
-            {
-                Question = question,
-                Settings = _settings
-            };
+            // if the answer is wrong
+            model.Question.IncorrectStreak++;
+            model.Settings = settings;
+            SaveSettingsToTempData(settings);
             return View(model);
         }
 
-        [HttpPost]
-        public IActionResult UpdateSettings(BlackJackVM model)
+        SaveSettingsToTempData(settings);
+        return RedirectToAction("BlackJackQuestion");
+    }
+
+    private void SaveSettingsToTempData(BlackJackSettings settings)
+    {
+        TempData["MinBet"] = settings.MinBet;
+        TempData["MaxBet"] = settings.MaxBet;
+        TempData["Increment"] = settings.Increment;
+        TempData.Keep("MinBet");
+        TempData.Keep("MaxBet");
+        TempData.Keep("Increment");
+    }
+
+    private BlackJackSettings GetSettingsFromTempData()
+    {
+        return new BlackJackSettings
         {
-            _settings = model.Settings;
-            return RedirectToAction("BlackJackQuestion");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> BlackJackQuestion(BlackJackVM model)
-        {
-            var userId = _userManager.GetUserId(User)!;
-
-            bool isCorrect =  await _blackJackService.SaveBlackJackQuestionAsync(model.Question, userId);
-
-            // if the answer is correct
-            if (isCorrect)
-            {
-                return RedirectToAction("BlackJackQuestion", "BlackJack");
-            }
-            else
-            {
-                // if the answer is wrong
-                model.Question.IncorrectStreak++;
-                return View(model);
-            }
-
-        }
-
+            MinBet = TempData.ContainsKey("MinBet") ? (int)TempData["MinBet"] : 5,
+            MaxBet = TempData.ContainsKey("MaxBet") ? (int)TempData["MaxBet"] : 100,
+            Increment = TempData.ContainsKey("Increment") ? (int)TempData["Increment"] : 5
+        };
     }
 }
