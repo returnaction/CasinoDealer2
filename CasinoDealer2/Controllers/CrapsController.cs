@@ -1,6 +1,7 @@
 ﻿using CasinoDealer2.Data;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
+using CasinoDealer2.RepositoryFolder.CrapsRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,39 +13,28 @@ namespace CasinoDealer2.Controllers
     [Authorize]
     public class CrapsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrapsService _crapsService;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly Random _random = new Random();
 
-        public CrapsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+
+        public CrapsController(UserManager<IdentityUser> userManager, ICrapsService crapsService)
         {
-            _context = context;
             _userManager = userManager;
+            _crapsService = crapsService;
         }
 
         public IActionResult CrapsQuestion()
         {
-            var question = GenerateCrQuestion();
+            var question = _crapsService.GenerateCrapsQuestion();
             return View(question);
         }
 
         [HttpPost]
         public async Task<IActionResult> CrapsQuestion(Question request)
         {
-            var userId =  _userManager.GetUserId(User);
+            var userId =  _userManager.GetUserId(User)!;
 
-            bool isCorrect = false;
-
-            if (request.Answer == request.CorrectAnswer)
-                isCorrect = true;
-           
-
-            request.Id = Guid.NewGuid();
-            request.IsCorrect = isCorrect;
-            request.UserId = userId!;
-
-            _context.Questions.Add(request);
-            await _context.SaveChangesAsync();
+            bool isCorrect = await _crapsService.SaveCrapsQuestionAsync(request, userId);
 
             if (isCorrect)
             {
@@ -56,43 +46,9 @@ namespace CasinoDealer2.Controllers
                 request.IncorrectStreak++;
                 return View(request);
             }
+
         }
 
-        private Question GenerateCrQuestion()
-        {
-            int diceRolled = RollDice();
-            int bet = GenerateRandomHornBet();
-            string questionText = $"Horn. Rolls: {diceRolled} | bet: {bet}";
-            double correctAnswer = CalculateCorrectHornBetAnswer(bet, diceRolled);
-
-            var question = new Question
-            {
-                QuestionText = questionText,
-                CorrectAnswer = correctAnswer,
-                GameType = GameType.Craps,
-                DiceRolled = diceRolled
-            };
-
-            return question;
-        }
-
-        private int RollDice()
-        {
-            int[] outcome = { 2, 3, 11, 12 };
-            return outcome[_random.Next(0, outcome.Length)];
-        }
-
-        private int GenerateRandomHornBet()
-        {
-            return _random.Next(1, 26) * 4;
-        }
-
-        private double CalculateCorrectHornBetAnswer(int bet, int rolledNumber)
-        {
-            if (rolledNumber == 3 || rolledNumber == 11)
-                return bet * 3;
-            else
-                return (bet * 7) - (bet / 4);
-        }
+       
     }
 }

@@ -45,6 +45,5 @@ namespace CasinoDealer2.Controllers
 
         }
 
-
     }
 }
