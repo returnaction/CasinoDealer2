@@ -33,7 +33,7 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
                 number = _random.Next(minBet / increment, maxBet / increment + 1) * increment;
             }
 
-            string questionText = $"What is the blackjack payout of {number}";
+            string questionText = $"BlackJack of {number}";
             double correctAnswer = number * 1.5;
 
             var question = new Question
