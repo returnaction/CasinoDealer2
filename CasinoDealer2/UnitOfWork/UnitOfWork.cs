@@ -1,5 +1,4 @@
 ﻿using CasinoDealer2.Data;
-using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.RepositoryFolder.QuestionRepository;
 
 namespace CasinoDealer2.UnitOfWork

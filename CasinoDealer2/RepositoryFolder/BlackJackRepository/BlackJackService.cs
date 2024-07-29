@@ -1,12 +1,8 @@
 ﻿using CasinoDealer2.Data;
-using CasinoDealer2.Models.BlackJackModels;
 using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 {
@@ -71,11 +67,6 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 
             return question.IsCorrect;
         }
-
-
-        
-
-
 
         
     }
