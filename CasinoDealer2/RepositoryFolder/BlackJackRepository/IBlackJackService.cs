@@ -9,7 +9,8 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
         Question GenerateBlackJackQuestion(BlackJackSettings settings);
         Task<bool> SaveBlackJackQuestionAsync(Question question, string userId);
 
-        
+        Task<Question> GenerateBlackJackTournamentQuestion();
+        Task<int> UpdateBlackJackTournamentRecord(string userId, bool isCorrect, int currentStreak);
 
     }
 }

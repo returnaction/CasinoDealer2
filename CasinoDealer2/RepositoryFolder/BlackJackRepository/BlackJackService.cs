@@ -3,6 +3,7 @@ using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 {
@@ -12,6 +13,7 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
         private readonly Random _random = new Random();
 
         private readonly ApplicationDbContext _context;
+
         public BlackJackService(IUnitOfWork unitOfWork, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
@@ -68,6 +70,34 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
             return question.IsCorrect;
         }
 
-        
+        // BlackJack Tournament Question
+        public async Task<Question> GenerateBlackJackTournamentQuestion()
+        {
+            return GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
+        }
+
+        public async Task<int> UpdateBlackJackTournamentRecord(string userId, bool isCorrect, int currentStreak)
+        {
+            if (isCorrect)
+            {
+                currentStreak++;
+                var bjTournamentRecord = await _context.BlackJackTournamentRecords.SingleAsync(record => record.UserId == userId);
+                if (currentStreak > bjTournamentRecord.LongestStreak)
+                {
+                    bjTournamentRecord.LongestStreak = currentStreak;
+                    bjTournamentRecord.Date = DateTime.Now;
+
+                    _context.BlackJackTournamentRecords.Update(bjTournamentRecord);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                currentStreak = 0;
+            }
+
+            return currentStreak;
+        }
     }
+    
 }

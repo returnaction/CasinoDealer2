@@ -102,12 +102,12 @@ public class BlackJackController : Controller
     public IActionResult BlackJackTournamentQuestion()
     {
         TempData["CurrentStreak"] = 0;
-        TempData["PersonalRecord"] = 0;
+        //TempData["PersonalRecord"] = 0;
 
         Question questionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
 
         ViewBag.CurrentStreak = TempData["CurrentStreak"];
-        ViewBag.PersonalRecord = TempData["PersonalRecord"];
+       // ViewBag.PersonalRecord = TempData["PersonalRecord"];
 
         return View(questionForTournament);
     }
@@ -117,37 +117,16 @@ public class BlackJackController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
 
-        var bjTournamentRecord = await _context.BlackJackTournamentRecords.SingleAsync(record => record.UserId == user!.Id);
-
-        bool isCorrect = question.Answer == question.CorrectAnswer;
         int currentStreak = (int)(TempData["CurrentStreak"] ?? 0);
 
-        if (isCorrect)
-        {
-            currentStreak++;
-            TempData["CurrentStreak"] = currentStreak;
+        bool isCorrect = question.Answer == question.CorrectAnswer;
+        currentStreak = await _blackJackService.UpdateBlackJackTournamentRecord(user!.Id, isCorrect, currentStreak);
 
-            if(currentStreak > bjTournamentRecord.LongestStreak)
-            {
-                bjTournamentRecord.LongestStreak = currentStreak;
-                bjTournamentRecord.Date = DateTime.Now;
+        TempData["CurrentStreak"] = currentStreak;
 
-                _context.BlackJackTournamentRecords.Update(bjTournamentRecord);
-                await _context.SaveChangesAsync();
-            }
-            
-        }
-        else
-        {
-            currentStreak = 0;
-            TempData["CurrentStreak"] = currentStreak;
-                       
-        }
+        Question newQuestionForTournament = await _blackJackService.GenerateBlackJackTournamentQuestion();
 
-        Question newQuestionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
-
-        ViewBag.CurrentStreak = TempData["CurrentStreak"];
-        ViewBag.LongestStreak = bjTournamentRecord.LongestStreak;
+        ViewBag.CurrentStreak = currentStreak;
 
         return View(newQuestionForTournament);
 
