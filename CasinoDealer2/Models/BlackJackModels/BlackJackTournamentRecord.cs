@@ -9,6 +9,7 @@ namespace CasinoDealer2.Models.BlackJackModels
         [Key]
         public Guid Id { get; set; }
         public int LongestStreak { get; set; }
+        public int CurrentStreak { get; set; }
         public TimeSpan? Time { get; set; }
         public DateTime? Date { get; set; }
 

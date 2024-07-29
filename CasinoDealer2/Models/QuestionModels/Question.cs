@@ -24,7 +24,6 @@ namespace CasinoDealer2.Models.QuestionModels
         public int? DiceRolled { get; set; }
         // End Dice
 
-
         public bool IsCorrect { get; set; }
 
         public int IncorrectStreak { get; set; } = 0;

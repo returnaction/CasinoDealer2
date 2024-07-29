@@ -1,0 +1,57 @@
+﻿@model Question
+@{
+    ViewData["Title"] = "BlackJackTournamentQuestion";
+    int currentStreak = ViewBag.CurrentStreak != null ? (int)ViewBag.CurrentStreak : 0;
+}
+
+<div class="container" style="min-height: 100vh;">
+
+    <div>
+        <h1 class="card-title text-center">BlackJack Tournament</h1>
+        <h3 class="text-center">Correct Answers: @currentStreak</h3>
+    </div>
+
+    <div class="card w-50 mx-auto">
+        <div class="card-body">
+            <form asp-action="BlackJackTournamentQuestion" method="post" class="d-flex flex-column align-items-center">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CorrectAnswer" id="correctAnswer" value="@Model.CorrectAnswer" />
+                <input type="hidden" asp-for="IsCorrect" />
+                <input type="hidden" asp-for="IncorrectStreak" />
+                <input type="hidden" asp-for="QuestionText" />
+                <input type="hidden" asp-for="GameType" />
+
+                <div class="form-group text-center">
+                    <p>@Model.QuestionText</p>
+                </div>
+               
+                <div class="form-group">
+                    <input asp-for="Answer" type="number" step="any" value="" autofocus class="form-control" placeholder="answer" style="max-width: 150px" id="answerInput" />
+                    <span asp-validation-for="Answer" class="text-danger"></span>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    /* Hide spin buttons in input fields */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+    }
+</style>
+
+
