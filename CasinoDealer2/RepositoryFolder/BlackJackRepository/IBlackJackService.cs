@@ -1,4 +1,5 @@
-﻿using CasinoDealer2.Models.BlackJackSettings;
+﻿using CasinoDealer2.Models.BlackJackModels;
+using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.QuestionModels;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
@@ -7,5 +8,8 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
     {
         Question GenerateBlackJackQuestion(BlackJackSettings settings);
         Task<bool> SaveBlackJackQuestionAsync(Question question, string userId);
+
+        
+
     }
 }

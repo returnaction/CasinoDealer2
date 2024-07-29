@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CasinoDealer2.Data.Migrations
+namespace CasinoDealer2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240726175055_QuestionremovedNewGuid")]
-    partial class QuestionremovedNewGuid
+    [Migration("20240728225727_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

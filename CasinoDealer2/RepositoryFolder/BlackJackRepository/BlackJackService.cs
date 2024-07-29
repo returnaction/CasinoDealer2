@@ -1,7 +1,12 @@
-﻿using CasinoDealer2.Models.BlackJackSettings;
+﻿using CasinoDealer2.Data;
+using CasinoDealer2.Models.BlackJackModels;
+using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 {
@@ -9,9 +14,12 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Random _random = new Random();
-        public BlackJackService(IUnitOfWork unitOfWork)
+
+        private readonly ApplicationDbContext _context;
+        public BlackJackService(IUnitOfWork unitOfWork, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public Question GenerateBlackJackQuestion(BlackJackSettings settings)
@@ -63,5 +71,12 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 
             return question.IsCorrect;
         }
+
+
+        
+
+
+
+        
     }
 }

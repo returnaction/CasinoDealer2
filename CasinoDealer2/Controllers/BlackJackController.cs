@@ -1,9 +1,14 @@
-﻿using CasinoDealer2.Models.BlackJackSettings;
+﻿using CasinoDealer2.Data;
+using CasinoDealer2.Models.BlackJackModels;
+using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
+using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.RepositoryFolder.BalckJackRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 [Authorize]
 public class BlackJackController : Controller
@@ -11,13 +16,16 @@ public class BlackJackController : Controller
     private readonly IBlackJackService _blackJackService;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService)
+    private readonly ApplicationDbContext _context;
+
+    public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService, ApplicationDbContext context)
     {
         _userManager = userManager;
         _blackJackService = blackJackService;
+        _context = context;
     }
 
-    // Inital Page
+    // Inital Page hasn't been done yet. Maybe will add functionallity for traiting.... 
     public IActionResult BlackJackIndex()
     {
         return View();
@@ -86,5 +94,54 @@ public class BlackJackController : Controller
             Increment = TempData.ContainsKey("Increment") ? (int)TempData["Increment"]! : 5,
             PayoutType = TempData.ContainsKey("PayoutType") ? (BlackJackPayOutType)TempData["PayoutType"]! : BlackJackPayOutType.ThreeToTwo
         };
+    }
+
+    //_________________Black Jack Tournament__________________
+
+    public IActionResult BlackJackTournamentQuestion()
+    {
+
+        Question questionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
+
+        return View(questionForTournament);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BlackJackTournamentQuestion(Question question)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        var bjTournamentRecord = _context.BlackJackTournamentRecords.SingleAsync(record => record.UserId == user!.Id);
+
+
+        // if the answer is correct
+
+        // get from db our record
+        
+            // if streak is more that  we have in db  we save it 
+
+
+        return RedirectToAction(nameof(BlackJackTournamentQuestion));
+    }
+
+    public async Task<IActionResult> CreateBlackJackTournamentRecord()
+    {
+        IdentityUser? user = await _userManager.GetUserAsync(User);
+
+        BlackJackTournamentRecord? record = await _context.BlackJackTournamentRecords.FirstOrDefaultAsync(u => u.UserId == user!.Id);
+
+        if(record is null)
+        {
+            var blackJackTournamentRecord = new BlackJackTournamentRecord()
+            {
+                LongestStreak = 0,
+                UserId = user!.Id,
+            };
+
+            await _context.BlackJackTournamentRecords.AddAsync(blackJackTournamentRecord);
+            await _context.SaveChangesAsync();
+        }
+
+       return RedirectToAction(nameof(BlackJackTournamentQuestion));
     }
 }
