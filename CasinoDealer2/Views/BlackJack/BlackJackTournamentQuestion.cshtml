@@ -2,12 +2,14 @@
 @{
     ViewData["Title"] = "BlackJackTournamentQuestion";
     int currentStreak = ViewBag.CurrentStreak != null ? (int)ViewBag.CurrentStreak : 0;
+    int longestStreak = ViewBag.LongestStreak != null ? (int)ViewBag.LongestStreak : 0;
 }
 
 <div class="container" style="min-height: 100vh;">
 
     <div>
         <h1 class="card-title text-center">BlackJack Tournament</h1>
+        <h3 class="text-center">Personal Record: @longestStreak</h3>
         <h3 class="text-center">Correct Answers: @currentStreak</h3>
     </div>
 
@@ -15,7 +17,7 @@
         <div class="card-body">
             <form asp-action="BlackJackTournamentQuestion" method="post" class="d-flex flex-column align-items-center">
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="CorrectAnswer" id="correctAnswer" value="@Model.CorrectAnswer" />
+                <input type="hidden" asp-for="CorrectAnswer" value="@Model.CorrectAnswer" />
                 <input type="hidden" asp-for="IsCorrect" />
                 <input type="hidden" asp-for="IncorrectStreak" />
                 <input type="hidden" asp-for="QuestionText" />

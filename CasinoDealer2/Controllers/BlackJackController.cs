@@ -31,6 +31,8 @@ public class BlackJackController : Controller
         return View();
     }
 
+    //___________________Black Jack________________
+
     public IActionResult BlackJackQuestion()
     {
         BlackJackSettings settings = GetSettingsFromTempData();
@@ -101,10 +103,12 @@ public class BlackJackController : Controller
     public IActionResult BlackJackTournamentQuestion()
     {
         TempData["CurrentStreak"] = 0;
+        TempData["PersonalRecord"] = 0;
 
         Question questionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
 
         ViewBag.CurrentStreak = TempData["CurrentStreak"];
+        ViewBag.PersonalRecord = TempData["PersonalRecord"];
 
         return View(questionForTournament);
     }
@@ -115,7 +119,7 @@ public class BlackJackController : Controller
         var user = await _userManager.GetUserAsync(User);
 
         var bjTournamentRecord = await _context.BlackJackTournamentRecords.SingleAsync(record => record.UserId == user!.Id);
-        
+
         bool isCorrect = question.Answer == question.CorrectAnswer;
         int currentStreak = (int)(TempData["CurrentStreak"] ?? 0);
 
@@ -144,6 +148,7 @@ public class BlackJackController : Controller
         Question newQuestionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
 
         ViewBag.CurrentStreak = TempData["CurrentStreak"];
+        ViewBag.LongestStreak = bjTournamentRecord.LongestStreak;
 
         return View(newQuestionForTournament);
 
