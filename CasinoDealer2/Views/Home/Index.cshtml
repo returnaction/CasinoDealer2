@@ -1,4 +1,6 @@
-﻿@{
+﻿@using CasinoDealer2.Models.HomeModels
+@model HomeVM
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -9,8 +11,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">BlackJack</h5>
-                    <p class="card-text">Тренировки по BlackJack</p>
-                    <a asp-controller="BlackJack" asp-action="BlackJackQuestion" class="btn btn-primary">Тренироваться</a>
+                    <p class="card-text">BlackJack training</p>
+                    <a asp-controller="BlackJack" asp-action="BlackJackQuestion" class="btn btn-primary">Practice</a>
                 </div>
             </div>
         </div>
@@ -19,8 +21,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Roulette</h5>
-                    <p class="card-text">Тренировки по Roulette</p>
-                    <a asp-controller="Roulette" asp-action="RouletteQuestion" class="btn btn-primary">Тренироваться</a>
+                    <p class="card-text">Roulette training</p>
+                    <a asp-controller="Roulette" asp-action="RouletteQuestion" class="btn btn-primary">Practice</a>
                 </div>
             </div>
         </div>
@@ -30,8 +32,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Craps</h5>
-                    <p class="card-text">Тренировки по Craps</p>
-                    <a asp-controller="Craps" asp-action="CrapsQuestion" class="btn btn-primary">Тренироваться</a>
+                    <p class="card-text">Craps training</p>
+                    <a asp-controller="Craps" asp-action="CrapsQuestion" class="btn btn-primary">Practice</a>
                 </div>
             </div>
         </div>
@@ -46,6 +48,12 @@
                     <a asp-controller="BlackJack" asp-action="CreateBlackJackTournamentRecord" class="btn btn-primary">Enter the tournament</a>
                 </div>
             </div>
+
+            <div class="mt-4">
+                <h5 class="text-center">Top BlackJack Tournament Players</h5>
+                @await Html.PartialAsync("_TopBlackJackPlayers", Model.TopBlackJackTournamentRecords)
+            </div>
+
         </div>
 
         <div class="col-md-4">

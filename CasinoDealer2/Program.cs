@@ -1,6 +1,5 @@
 using CasinoDealer2.Data;
 using CasinoDealer2.Extenstions;
-using CasinoDealer2.Models.BlackJackSettings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

@@ -15,13 +15,10 @@ public class BlackJackController : Controller
     private readonly IBlackJackService _blackJackService;
     private readonly UserManager<IdentityUser> _userManager;
 
-    private readonly ApplicationDbContext _context;
-
-    public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService, ApplicationDbContext context)
+    public BlackJackController(UserManager<IdentityUser> userManager, IBlackJackService blackJackService)
     {
         _userManager = userManager;
         _blackJackService = blackJackService;
-        _context = context;
     }
 
     // Inital Page hasn't been done yet. Maybe will add functionallity for traiting.... 
@@ -124,7 +121,7 @@ public class BlackJackController : Controller
 
         TempData["CurrentStreak"] = currentStreak;
 
-        Question newQuestionForTournament = await _blackJackService.GenerateBlackJackTournamentQuestion();
+        Question newQuestionForTournament = _blackJackService.GenerateBlackJackTournamentQuestion();
 
         ViewBag.CurrentStreak = currentStreak;
 
@@ -136,18 +133,22 @@ public class BlackJackController : Controller
     {
         IdentityUser? user = await _userManager.GetUserAsync(User);
 
-        BlackJackTournamentRecord? record = await _context.BlackJackTournamentRecords.FirstOrDefaultAsync(u => u.UserId == user!.Id);
+        BlackJackTournamentRecord? record = await _blackJackService.GetBlackJackTournamentRecordByUserId(user!.Id);
+            //await _context.BlackJackTournamentRecords.FirstOrDefaultAsync(u => u.UserId == user!.Id);
 
         if(record is null)
         {
-            var blackJackTournamentRecord = new BlackJackTournamentRecord()
-            {
-                LongestStreak = 0,
-                UserId = user!.Id,
-            };
+            await _blackJackService.CreateBlackJackTournamentRecordAsync(user.Id);
+            //var blackJackTournamentRecord = new BlackJackTournamentRecord()
+            //{
+            //    LongestStreak = 0,
+            //    UserId = user!.Id,
+            //};
 
-            await _context.BlackJackTournamentRecords.AddAsync(blackJackTournamentRecord);
-            await _context.SaveChangesAsync();
+            //await _blackJackService.AddAsync(blackJackTournamentRecord);
+            
+            //await _context.BlackJackTournamentRecords.AddAsync(blackJackTournamentRecord);
+            //await _context.SaveChangesAsync();
         }
 
        return RedirectToAction(nameof(BlackJackTournamentQuestion));

@@ -1,0 +1,21 @@
+﻿@using CasinoDealer2.Models.BlackJackModels
+@model List<BlackJackTournamentRecord>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Streak</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var record in Model)
+        {
+            <tr>
+                <td>@record.User.Email!.Split('@')[0]</td>
+                <td>@record.LongestStreak</td>
+            </tr>
+        }
+    </tbody>
+</table>

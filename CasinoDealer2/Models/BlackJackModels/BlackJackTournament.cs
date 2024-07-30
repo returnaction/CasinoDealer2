@@ -6,7 +6,7 @@ namespace CasinoDealer2.Models.BlackJackModels
 {
     public class BlackJackTournament
     {
-        public string QuestionText { get; set; }
+        public string QuestionText { get; set; } = null!;
         public double CorrectAnswer { get; set; }
 
         [Required]

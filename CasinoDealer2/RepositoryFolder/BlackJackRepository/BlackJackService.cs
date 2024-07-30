@@ -1,23 +1,22 @@
 ﻿using CasinoDealer2.Data;
+using CasinoDealer2.Models.BlackJackModels;
 using CasinoDealer2.Models.BlackJackSettings;
 using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
+using CasinoDealer2.RepositoryFolder.BaseRepository;
 using CasinoDealer2.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 {
-    public class BlackJackService : IBlackJackService
+    public class BlackJackService : Repository<BlackJackTournamentRecord>, IBlackJackService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Random _random = new Random();
 
-        private readonly ApplicationDbContext _context;
 
-        public BlackJackService(IUnitOfWork unitOfWork, ApplicationDbContext context)
+        public BlackJackService( ApplicationDbContext context) : base(context)
         {
-            _unitOfWork = unitOfWork;
-            _context = context;
         }
 
         public Question GenerateBlackJackQuestion(BlackJackSettings settings)
@@ -71,7 +70,7 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
         }
 
         // BlackJack Tournament Question
-        public async Task<Question> GenerateBlackJackTournamentQuestion()
+        public Question GenerateBlackJackTournamentQuestion()
         {
             return GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
         }
@@ -81,7 +80,8 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
             if (isCorrect)
             {
                 currentStreak++;
-                var bjTournamentRecord = await _context.BlackJackTournamentRecords.SingleAsync(record => record.UserId == userId);
+                var bjTournamentRecord = await GetBlackJackTournamentRecordByUserId(userId);
+
                 if (currentStreak > bjTournamentRecord.LongestStreak)
                 {
                     bjTournamentRecord.LongestStreak = currentStreak;
@@ -98,6 +98,35 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
 
             return currentStreak;
         }
+
+        public async Task<BlackJackTournamentRecord> GetBlackJackTournamentRecordByUserId(string userId)
+        {
+           return await _context.BlackJackTournamentRecords.SingleOrDefaultAsync(record => record.UserId == userId);
+        }
+
+        public async Task CreateBlackJackTournamentRecordAsync(string userId)
+        {
+            var blackJackTournamentRecord = new BlackJackTournamentRecord()
+            {
+                LongestStreak = 0,
+                UserId = userId
+            };
+
+            await _context.BlackJackTournamentRecords.AddAsync(blackJackTournamentRecord);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<BlackJackTournamentRecord>> GetTopBlackJackTournamentRecordsAsync(int topN)
+        {
+            return await _context.BlackJackTournamentRecords
+                 .Include(record => record.User)
+                 .OrderByDescending(record => record.LongestStreak)
+                 .Take(topN)
+                 .ToListAsync();
+        }
     }
-    
+
 }
+
+
+

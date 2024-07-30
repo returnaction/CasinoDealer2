@@ -1,4 +1,6 @@
 using CasinoDealer2.Models;
+using CasinoDealer2.Models.HomeModels;
+using CasinoDealer2.RepositoryFolder.BalckJackRepository;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,15 +9,21 @@ namespace CasinoDealer2.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IBlackJackService _blackJackService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IBlackJackService blackJackService)
         {
             _logger = logger;
+            _blackJackService = blackJackService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var model = new HomeVM
+            {
+                TopBlackJackTournamentRecords = await _blackJackService.GetTopBlackJackTournamentRecordsAsync(5)
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()
