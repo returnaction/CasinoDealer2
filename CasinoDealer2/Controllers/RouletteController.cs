@@ -18,32 +18,32 @@ namespace CasinoDealer2.Controllers
             _rouletteService = rouletteService;
         }
 
-        public IActionResult RouletteQuestion()
-        {
-            var question = _rouletteService.GenerateRouletteQuestion();
-            return View(question);
-        }
+        //public IActionResult RouletteQuestion()
+        //{
+        //    var question = _rouletteService.GenerateRouletteQuestion();
+        //    return View(question);
+        //}
 
-        [HttpPost]
-        public async Task<IActionResult> RouletteQuestion(Question request)
-        {
-            var userId = _userManager.GetUserId(User)!;
+        //[HttpPost]
+        //public async Task<IActionResult> RouletteQuestion(Question request)
+        //{
+        //    var userId = _userManager.GetUserId(User)!;
 
-            bool isCorrect = await _rouletteService.SaveRouletteQuestionAsync(request, userId);
+        //    bool isCorrect = await _rouletteService.SaveRouletteQuestionAsync(request, userId);
 
-            // if the answer is correct
-            if (isCorrect)
-            {
-                return RedirectToAction("RouletteQuestion", "Roulette");
-            }
-            else
-            {
-                // if the answer is wrong
-                request.IncorrectStreak++;
-                return View(request);
-            }
+        //    // if the answer is correct
+        //    if (isCorrect)
+        //    {
+        //        return RedirectToAction("RouletteQuestion", "Roulette");
+        //    }
+        //    else
+        //    {
+        //        // if the answer is wrong
+        //        request.IncorrectStreak++;
+        //        return View(request);
+        //    }
 
-        }
+        //}
 
     }
 }

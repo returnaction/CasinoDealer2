@@ -23,7 +23,7 @@ namespace CasinoDealer2.Models.RouletteModels
         public int StraitUp { get; set; }
         public int Split { get; set; }
         public int Corner { get; set; }
-        public int Straight { get; set; }
+        public int Street { get; set; }
         public int SixLine { get; set; }
 
 
