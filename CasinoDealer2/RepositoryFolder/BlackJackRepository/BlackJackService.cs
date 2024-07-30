@@ -124,6 +124,16 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
                  .Take(topN)
                  .ToListAsync();
         }
+
+        public async Task<int> GetPersonalRecord(string userId)
+        {
+            int userRecord = await _context.BlackJackTournamentRecords
+                .Where(r => r.UserId == userId)
+                .Select(r => r.LongestStreak)
+                .FirstOrDefaultAsync();
+
+            return userRecord;
+        }
     }
 
 }

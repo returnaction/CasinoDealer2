@@ -96,15 +96,18 @@ public class BlackJackController : Controller
 
     //_________________Black Jack Tournament__________________
 
-    public IActionResult BlackJackTournamentQuestion()
+    public async Task<IActionResult> BlackJackTournamentQuestion()
     {
+        var userid = _userManager.GetUserId(User);
         TempData["CurrentStreak"] = 0;
-        //TempData["PersonalRecord"] = 0;
+        TempData["PersonalRecord"] = await _blackJackService.GetPersonalRecord(userid!);
 
         Question questionForTournament = _blackJackService.GenerateBlackJackQuestion(new BlackJackSettings { Increment = 5, MinBet = 5, MaxBet = 10000, PayoutType = BlackJackPayOutType.ThreeToTwo });
 
         ViewBag.CurrentStreak = TempData["CurrentStreak"];
-       // ViewBag.PersonalRecord = TempData["PersonalRecord"];
+        ViewBag.PersonalRecord = TempData["PersonalRecord"];
+
+        TempData.Keep("PersonalRecord");
 
         return View(questionForTournament);
     }
@@ -115,15 +118,23 @@ public class BlackJackController : Controller
         var user = await _userManager.GetUserAsync(User);
 
         int currentStreak = (int)(TempData["CurrentStreak"] ?? 0);
+        int personalRecordTemp = (int)(TempData["PersonalRecord"] ?? 0);
 
         bool isCorrect = question.Answer == question.CorrectAnswer;
         currentStreak = await _blackJackService.UpdateBlackJackTournamentRecord(user!.Id, isCorrect, currentStreak);
 
         TempData["CurrentStreak"] = currentStreak;
+        if (personalRecordTemp < currentStreak)
+        {
+            TempData["PersonalRecord"] = currentStreak;
+        }
 
         Question newQuestionForTournament = _blackJackService.GenerateBlackJackTournamentQuestion();
 
         ViewBag.CurrentStreak = currentStreak;
+        ViewBag.PersonalRecord = TempData["PersonalRecord"];
+
+        TempData.Keep("PersonalRecord");
 
         return View(newQuestionForTournament);
 

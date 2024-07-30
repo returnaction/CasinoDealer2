@@ -17,9 +17,12 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
         Task<int> UpdateBlackJackTournamentRecord(string userId, bool isCorrect, int currentStreak);
         Task CreateBlackJackTournamentRecordAsync(string userId);
 
-
+        
         // Get list of Top users
         Task<List<BlackJackTournamentRecord>> GetTopBlackJackTournamentRecordsAsync(int topN);
+
+        // Get Personal Record of Longest Streak
+        Task<int> GetPersonalRecord(string userId);
 
     }
 }
