@@ -145,21 +145,10 @@ public class BlackJackController : Controller
         IdentityUser? user = await _userManager.GetUserAsync(User);
 
         BlackJackTournamentRecord? record = await _blackJackService.GetBlackJackTournamentRecordByUserId(user!.Id);
-            //await _context.BlackJackTournamentRecords.FirstOrDefaultAsync(u => u.UserId == user!.Id);
 
         if(record is null)
         {
             await _blackJackService.CreateBlackJackTournamentRecordAsync(user.Id);
-            //var blackJackTournamentRecord = new BlackJackTournamentRecord()
-            //{
-            //    LongestStreak = 0,
-            //    UserId = user!.Id,
-            //};
-
-            //await _blackJackService.AddAsync(blackJackTournamentRecord);
-            
-            //await _context.BlackJackTournamentRecords.AddAsync(blackJackTournamentRecord);
-            //await _context.SaveChangesAsync();
         }
 
        return RedirectToAction(nameof(BlackJackTournamentQuestion));
