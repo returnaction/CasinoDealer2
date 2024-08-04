@@ -1,4 +1,5 @@
-﻿using CasinoDealer2.Models.Enums;
+﻿using CasinoDealer2.Data;
+using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.Models.RouletteModels;
 using CasinoDealer2.UnitOfWork;
@@ -10,9 +11,11 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Random _random = new Random();
-        public RouletteService(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _context;
+        public RouletteService(IUnitOfWork unitOfWork, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public QuestionAR GenerateRouletteQuestion(RouletteSettings settings)
@@ -36,23 +39,53 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
 
             if (isStraightUp)
             {
-
+                straightUp = _random.Next(minBet, maxBet + 1);
             }
-           
+            if (isSplit)
+            {
+                split = _random.Next(minBet, maxBet + 1);
+            }
+            if (isCorner)
+            {
+                corner = _random.Next(minBet, maxBet + 1);
+            }
+            if (isStreet)
+            {
+                street = _random.Next(minBet, maxBet + 1);
+            }
+            if (isSixline)
+            {
+                sixline = _random.Next(minBet, maxBet + 1);
+            }
 
-            int multiplier = _random.Next(0, 2) == 0 ? 17 : 35;
-            int number = _random.Next(1, 21);
 
-            double correctAnswer = multiplier * number;
 
-            string questionText = $"What is the result of {multiplier} x {number}";
+            double correctAnswer = 0;
+
+            if (straightUp > 0)
+                correctAnswer += straightUp * 35;
+            if (split > 0)
+                correctAnswer += split * 17;
+            if (corner > 0)
+                correctAnswer += corner * 8;
+            if (street > 0)
+                correctAnswer += street * 11;
+            if (sixline > 0)
+                correctAnswer += sixline * 5;
+
+            string questionText = $"What is the result of Straight UP - {straightUp}, Split - {split}, Corner - {corner}, Street - {street}, SixLine - {sixline}";
 
             var question = new QuestionAR
             {
                 QuestionText = questionText,
                 CorrectAnswer = correctAnswer,
                 IsCorrect = false,
-                GameType = GameType.Roulette
+                GameType = GameType.Roulette,
+                StraitUp = straightUp,
+                Split = split,
+                Corner = corner,
+                Street = street,
+                SixLine = sixline
             };
 
             return question;
@@ -60,17 +93,15 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
 
         public async Task<bool> SaveRouletteQuestionAsync(QuestionAR question, string userId)
         {
-            //question.IsCorrect = question.Answer == question.CorrectAnswer;
+            question.IsCorrect = question.Answer == question.CorrectAnswer;
 
-            //question.Id = Guid.NewGuid();
-            //question.UserId = userId;
+            question.Id = Guid.NewGuid();
+            question.UserId = userId;
 
-            //await _unitOfWork.Questions.AddAsync(question);
-            //await _unitOfWork.SaveChangesAsync();
+            await _context.QuestionsAR.AddAsync(question);
+            await _unitOfWork.SaveChangesAsync();
 
-            //return question.IsCorrect;
-
-            return true;
+            return question.IsCorrect;
         }
     }
 }
