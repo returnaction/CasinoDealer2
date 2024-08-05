@@ -6,6 +6,10 @@
 
 <div class="container">
 
+    <div class="row mb-3">
+        <h2 class="text-center">Practice</h2>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <div class="card">
@@ -39,6 +43,10 @@
         </div>
     </div>
 
+    <div class="row mt-3">
+        <h2 class="text-center">Tournaments</h2>
+    </div>
+
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="card">
@@ -59,22 +67,34 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Roulette Advanced</h5>
-                    <p class="card-text">Тренировки по Roulette для продвинутых</p>
-                    <a asp-controller="Roulette" asp-action="RouletteAdvancedQuestion" class="btn btn-primary">Тренироваться</a>
+                    <h5 class="card-title">Roulette Tournament</h5>
+                    <p class="card-text small">Compete against personal record and other players</p>
+                    <a asp-controller="Roulette" asp-action="CreateBlackJackTournamentRecord" class="btn btn-primary">Enter the tournament</a>
                 </div>
+            </div>
+
+            <div class="mt-4">
+                <h5 class="text-center">Top Roulette Tournament Players</h5>
+                @await Html.PartialAsync("_TopRoulettePlayers", Model.TopRouletteTournamentRecords)
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Craps Advanced</h5>
-                    <p class="card-text">Тренировки по Craps для продвинутых</p>
-                    <a asp-controller="Craps" asp-action="CrapsAdvancedQuestion" class="btn btn-primary">Тренироваться</a>
+                    <h5 class="card-title">Craps Tournament</h5>
+                    <p class="card-text small">Compete against personal record and other players</p>
+                    <a asp-controller="Craps" asp-action="CrapsAdvancedQuestion" class="btn btn-primary" id="crapsAdvanceBtn">Enter the tournament</a>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
+
+<script>
+    document.getElementById("crapsAdvanceBtn").addEventListener("click", function (event) {
+        event.preventDefault();
+        alert("Coming soon =)");
+    });
+</script>

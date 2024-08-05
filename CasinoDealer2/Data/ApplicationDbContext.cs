@@ -16,6 +16,8 @@ namespace CasinoDealer2.Data
         public DbSet<Question> Questions { get; set; }
         public DbSet<BlackJackTournamentRecord> BlackJackTournamentRecords { get; set; }
         public DbSet<QuestionAR> QuestionsAR { get; set; }
+        public DbSet<RouletteTournamentRecord> RouletteTournamentRecords { get; set; }
+
         
 
     }

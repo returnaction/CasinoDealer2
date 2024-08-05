@@ -63,8 +63,8 @@ namespace CasinoDealer2.RepositoryFolder.BalckJackRepository
             question.Id = Guid.NewGuid();
             question.UserId = userId!;
 
-            await _unitOfWork.Questions.AddAsync(question);
-            await _unitOfWork.SaveChangesAsync();
+            await _context.Questions.AddAsync(question);
+            await _context.SaveChangesAsync();
 
             return question.IsCorrect;
         }

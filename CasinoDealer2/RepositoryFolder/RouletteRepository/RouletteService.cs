@@ -3,6 +3,7 @@ using CasinoDealer2.Models.Enums;
 using CasinoDealer2.Models.QuestionModels;
 using CasinoDealer2.Models.RouletteModels;
 using CasinoDealer2.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
 namespace CasinoDealer2.RepositoryFolder.RouletteRepository
@@ -111,6 +112,72 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
             await _unitOfWork.SaveChangesAsync();
 
             return question.IsCorrect;
+        }
+
+        public async Task<int> GetPersonalRecord(string userId)
+        {
+            int userRecord = await _context.RouletteTournamentRecords
+                .Where(r => r.UserId == userId)
+                .Select(r => r.LongestStreak)
+                .FirstOrDefaultAsync();
+
+            return userRecord;
+        }
+
+        public async Task<RouletteTournamentRecord> GetRouletteTournamentRecordByUserId(string userId)
+        {
+            return await _context.RouletteTournamentRecords.SingleOrDefaultAsync(record => record.UserId == userId);
+        }
+
+        public async Task CreateRouletteTournamentRecordAsync(string userId)
+        {
+            var rouletteTournamentRecord = new RouletteTournamentRecord()
+            {
+                LongestStreak = 0,
+                UserId = userId
+            };
+
+            await _context.RouletteTournamentRecords.AddAsync(rouletteTournamentRecord);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateRouletteTournamentRecord(string userId, bool isCorrect, int currentStreak)
+        {
+            if (isCorrect)
+            {
+                currentStreak++;
+                var rouletteTournamentRecord = await GetRouletteTournamentRecordByUserId(userId);
+
+                if(currentStreak > rouletteTournamentRecord.LongestStreak)
+                {
+                    rouletteTournamentRecord.LongestStreak = currentStreak;
+                    rouletteTournamentRecord.Date = DateTime.Now;
+
+                    _context.RouletteTournamentRecords.Update(rouletteTournamentRecord);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                currentStreak = 0;
+            }
+
+            return currentStreak;
+        }
+
+        public QuestionAR GenerateRouletteTournamentQuestion()
+        {
+            return GenerateRouletteQuestion(new RouletteSettings { Increment = 5, MinBet = 5, MaxBet = 100, IsStraightUp = true, IsSplit = true, IsCorner = true, IsStreet = true, IsSixline = true });
+
+        }
+
+        public async Task<List<RouletteTournamentRecord>> GetTopRouletteTournamentRecordsAsync(int topN)
+        {
+            return await _context.RouletteTournamentRecords
+                .Include(record => record.User)
+                .OrderByDescending(record => record.LongestStreak)
+                .Take(topN)
+                .ToListAsync();
         }
     }
 }

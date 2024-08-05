@@ -104,5 +104,63 @@ namespace CasinoDealer2.Controllers
             TempData.Keep("IsSixline");
         }
 
+
+        //_________________Roulette Tournament__________________
+
+        public async Task<IActionResult> RouletteTournamentQuestion()
+        {
+            var userId = _userManager.GetUserId(User);
+            TempData["CurrentStreak"] = 0;
+            TempData["PersonalRecord"] = await _rouletteService.GetPersonalRecord(userId!);
+
+            QuestionAR questionForTournament = _rouletteService.GenerateRouletteQuestion(new RouletteSettings { Increment = 5, MinBet = 5, MaxBet = 500, IsStraightUp = true });
+
+            ViewBag.CurrentStreak = TempData["CurrentStreak"];
+            ViewBag.PersonalRecord = TempData["PersonalRecord"];
+
+            TempData.Keep("PersonalRecord");
+
+            return View(questionForTournament);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RouletteTournamentQuestion(QuestionAR question)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            int currentStreak = (int)(TempData["CurrentStreak"] ?? 0);
+            int personalRecordTemp = (int)(TempData["PersonalRecord"] ?? 0);
+
+            bool isCorrect = question.Answer == question.CorrectAnswer;
+            currentStreak = await _rouletteService.UpdateRouletteTournamentRecord(user!.Id, isCorrect, currentStreak);
+
+            TempData["CurrentStreak"] = currentStreak;
+            if (personalRecordTemp < currentStreak)
+            {
+                TempData["PersonalRecord"] = currentStreak;
+            }
+
+            QuestionAR newQuestionForTournament = _rouletteService.GenerateRouletteTournamentQuestion();
+
+            ViewBag.CurrentStreak = currentStreak;
+            ViewBag.PersonalRecord = TempData["PersonalRecord"];
+
+            TempData.Keep("PersonalRecord");
+            return View(newQuestionForTournament);
+        }
+
+        public async Task<IActionResult> CreateBlackJackTournamentRecord()
+        {
+            IdentityUser? user = await _userManager.GetUserAsync(User);
+
+            RouletteTournamentRecord? record = await _rouletteService.GetRouletteTournamentRecordByUserId(user!.Id);
+
+            if(record is null)
+            {
+                await _rouletteService.CreateRouletteTournamentRecordAsync(user.Id);
+            }
+
+            return RedirectToAction(nameof(RouletteTournamentQuestion));
+        }
     }
 }
