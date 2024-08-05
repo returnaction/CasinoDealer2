@@ -39,23 +39,23 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
 
             if (isStraightUp)
             {
-                straightUp = _random.Next(minBet, maxBet + 1);
+                straightUp = GenerateRandomBet(minBet, maxBet, increment);
             }
             if (isSplit)
             {
-                split = _random.Next(minBet, maxBet + 1);
+                split = GenerateRandomBet(minBet, maxBet, increment);
             }
             if (isCorner)
             {
-                corner = _random.Next(minBet, maxBet + 1);
+                corner = GenerateRandomBet(minBet, maxBet, increment);
             }
             if (isStreet)
             {
-                street = _random.Next(minBet, maxBet + 1);
+                street = GenerateRandomBet(minBet, maxBet, increment);
             }
             if (isSixline)
             {
-                sixline = _random.Next(minBet, maxBet + 1);
+                sixline = GenerateRandomBet(minBet, maxBet, increment);
             }
 
 
@@ -89,6 +89,15 @@ namespace CasinoDealer2.RepositoryFolder.RouletteRepository
             };
 
             return question;
+        }
+
+        private int GenerateRandomBet(int minBet, int maxBet, int increment)
+        {
+            int min = (int)Math.Ceiling((double)minBet / increment);
+            int max = (int)Math.Floor((double)maxBet / increment);
+
+            int randomIncrement = _random.Next(min, max + 1);
+            return randomIncrement * increment;
         }
 
         public async Task<bool> SaveRouletteQuestionAsync(QuestionAR question, string userId)
